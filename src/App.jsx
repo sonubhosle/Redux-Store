@@ -2,9 +2,13 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { api, API_BASE_URL } from './config/apiConfig'
+import axios from 'axios'
 
 function App() {
   const [count, setCount] = useState(0)
+
+
 
   return (
     <>
