@@ -139,3 +139,35 @@ export const resetPassword = (token, newPassword, confirmPassword) => async (dis
         dispatch({ type: RESET_PASSWORD_FAILED, payload: message });
     }
 };
+
+
+export const restoreAuth = () => async (dispatch) => {
+  dispatch({ type: LOGIN_USER_REQUEST });
+  
+  try {
+    const jwt = localStorage.getItem("jwt");
+    
+    if (!jwt) {
+      dispatch({ type: LOGIN_USER_FAILED, payload: 'No saved session' });
+      return;
+    }
+    
+    const response = await api.get('/api/v1/user/profile', {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
+    
+    const userData = response.data;
+    
+    const completeUser = {
+      jwt: jwt,
+      message: 'Session restored',
+      ...userData
+    };
+    
+    dispatch({ type: LOGIN_USER_SUCCESS, payload: completeUser });
+    
+  } catch (error) {
+    localStorage.removeItem("jwt");
+    dispatch({ type: LOGOUT_USER });
+  }
+};
