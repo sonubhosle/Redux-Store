@@ -13,10 +13,16 @@ import Layout from './admin/Layout'
 import Dashboard from './admin/dashboard/Dashboard'
 import { useDispatch, useSelector } from 'react-redux'
 import { restoreAuth } from './states/Auth/Action'
+import Header from './components/Header/Header'
+import Profile from './pages/Profile'
+import ProductsPage from './pages/ProductsPage'
+import CategoryProducts from './components/Categories/CategoryProducts'
+import ProductDetails from './pages/ProductDetails'
+import Footer from './components/Footer/Footer'
 
 
 function App() {
-
+   const location = useLocation();
   const dispatch = useDispatch();
   const auth = useSelector(state => state.auth);
 
@@ -26,16 +32,26 @@ function App() {
     }
   }, [dispatch]);
 
+  const hideLayout =
+    location.pathname === "/auth" ||
+    location.pathname.startsWith("/admin");
+
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <>
+      {!hideLayout && <Header />}
+        <Suspense fallback={<div>Loading...</div>}>
+     
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/auth' element={<AuthPage />} />
         <Route path='/admin' element={<Admin />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
-
+         <Route path="/profile" element={<Profile />} />
+         <Route path='/products' element={<ProductsPage />} />
+         <Route path='/products/:category' element={<CategoryProducts />} />
+         <Route path='/product/:id' element={<ProductDetails />} />
         {/* Admin Routes */}
         <Route path="/admin/*" element={
           <ProtectedRoutes requiredRole="ADMIN">
@@ -48,7 +64,10 @@ function App() {
 
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+     <Footer/>
     </Suspense>
+    </>
+  
   )
 }
 

@@ -77,17 +77,28 @@ export const getUserProfile = () => async (dispatch) => {
 };
 
 
+
 export const updateUserProfile = (updateData) => async (dispatch) => {
     dispatch({ type: UPDATE_USER_PROFILE_REQUEST });
     try {
-        const { data } = await api.put('/api/v1/user/update', updateData);
+        // Check if updateData is FormData
+        const isFormData = updateData instanceof FormData;
+        
+        const { data } = await api.put('/api/v1/user/update', updateData, {
+            headers: isFormData 
+                ? { 'Content-Type': 'multipart/form-data' }
+                : { 'Content-Type': 'application/json' },
+        });
+        
         dispatch({ type: UPDATE_USER_PROFILE_SUCCESS, payload: data });
+        return { success: true, data };
     } catch (error) {
         const message =
             error.response?.data?.message ||
             error.response?.data?.error ||
             error.message;
         dispatch({ type: UPDATE_USER_PROFILE_FAILED, payload: message });
+        throw error;
     }
 };
 
